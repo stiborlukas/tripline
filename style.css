@@ -38,9 +38,11 @@ body {
 }
 
 .wrap {
+    position: relative;
     max-width: 980px;
     margin: 0 auto;
     padding: 28px 20px 80px;
+    min-height: 100vh;
 }
 
 .eyebrow {
@@ -672,6 +674,10 @@ table.days tr:last-child td {
 }
 
 .site-footer {
+    position: absolute;
+    bottom: 2%;
+    left: 20px;
+    right: 20px;
     margin-top: 48px;
     padding-top: 16px;
     border-top: 1px solid var(--hair);
