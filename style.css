@@ -451,6 +451,7 @@ table.days tr:last-child td {
 
 .card-outer {
     margin-top: 10px;
+    margin-bottom: 40px;
 }
 #tripCard {
     border: 1px solid var(--hair);
@@ -582,6 +583,10 @@ table.days tr:last-child td {
     }
     #cardGrid .cell:nth-child(2n) {
         border-right: none;
+    }
+
+    .card-outer {
+        margin-bottom: 70px;
     }
 }
 @media (max-width: 400px) {
