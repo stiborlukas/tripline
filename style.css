@@ -274,12 +274,76 @@ h1 {
     margin-left: 2px;
 }
 
-.footnote {
+.footnote-help {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.help-button {
+    width: 19px;
+    height: 19px;
+    padding: 0;
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--paper-dim);
     font-family: "IBM Plex Mono", monospace;
     font-size: 11px;
+    line-height: 17px;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        color 0.15s,
+        background 0.15s;
+}
+
+.help-button:hover,
+.help-button.active {
+    border-color: var(--c1);
+    color: var(--c1);
+    background: var(--panel-2);
+}
+
+.help-popover {
+    position: absolute;
+    z-index: 1000;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(520px, calc(100vw - 70px));
+    padding: 12px 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    border-radius: 3px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     color: var(--paper-dim);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
     line-height: 1.6;
-    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 0.15s,
+        visibility 0.15s;
+}
+
+.help-popover.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+    .help-popover {
+        left: 0;
+        top: 28px;
+        transform: none;
+        width: min(420px, calc(100vw - 40px));
+    }
 }
 
 .section-head {
