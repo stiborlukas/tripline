@@ -1,11 +1,220 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tripline - merge your bikepacking days</title>
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap"
+            rel="stylesheet" />
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="eyebrow">Field Log</div>
+            <h1>Tripline</h1>
+            <div class="sub">
+                Drop in a GPX file for each day of your bikepacking trip.
+                Tripline stitches them into one route, one elevation profile,
+                one story — and a card you can share.
+            </div>
+
+            <div class="how-it-works">
+                <div class="hiw-step">
+                    <span class="hiw-num">01</span
+                    ><span class="hiw-txt">Drop a GPX per day</span>
+                </div>
+                <div class="hiw-sep">→</div>
+                <div class="hiw-step">
+                    <span class="hiw-num">02</span
+                    ><span class="hiw-txt"
+                        >Tripline merges route, elevation & stats</span
+                    >
+                </div>
+                <div class="hiw-sep">→</div>
+                <div class="hiw-step">
+                    <span class="hiw-num">03</span
+                    ><span class="hiw-txt">Export a shareable card</span>
+                </div>
+            </div>
+
+            <div id="dropzoneWrap">
+                <div class="dropzone" id="dropzone">
+                    <div class="dz-icon">⤓</div>
+                    <div class="dz-main">
+                        Drop GPX files here, or click to browse
+                    </div>
+                    <div class="dz-sub">
+                        one file per day · sorted automatically by start time
+                    </div>
+                </div>
+                <div class="demo-link">
+                    No files handy?
+                    <button id="demoBtn">Load a demo trip</button>
+                </div>
+                <div id="errorBanner"></div>
+                <input type="file" id="fileInput" accept=".gpx" multiple />
+            </div>
+
+            <div id="dashboard">
+                <div class="titlerow">
+                    <div class="title-group">
+                        <input
+                            class="trip-title-input"
+                            id="tripTitle"
+                            value="Untitled Trip"
+                            spellcheck="false" />
+                        <input
+                            class="trip-subtitle-input"
+                            id="tripSubtitle"
+                            placeholder="Add a subtitle — e.g. 4 days, Julian Alps to the coast"
+                            spellcheck="false" />
+                    </div>
+                    <button class="btn" id="addMoreTop">+ Add day</button>
+                </div>
+
+                <div class="ledger" id="ledger"></div>
+                <div class="footnote">
+                    Gain/loss is computed from your file's own GPS/barometer
+                    elevation, lightly filtered for sensor noise. Strava,
+                    Garmin, and Komoot each run their own proprietary
+                    elevation-correction model against their own terrain data,
+                    so their numbers will still differ from this — and from each
+                    other — even on the exact same ride. That's normal, not a
+                    bug.
+                </div>
+
+                <div class="section-head">
+                    <h2>Route</h2>
+                    <span class="hint">colored by day</span>
+                </div>
+                <div id="map"></div>
+
+                <div class="section-head">
+                    <h2>Elevation</h2>
+                    <span class="hint"
+                        >merged profile, cumulative distance</span
+                    >
+                </div>
+                <div class="elev-wrap">
+                    <svg
+                        id="elevSvg"
+                        viewBox="0 0 1000 260"
+                        preserveAspectRatio="none"></svg>
+                    <div class="elev-legend" id="elevLegend"></div>
+                </div>
+
+                <div class="section-head">
+                    <h2>Days</h2>
+                    <span class="hint">reorder if start times are missing</span>
+                </div>
+                <div class="table-scroll">
+                    <table class="days">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Day</th>
+                                <th>Distance</th>
+                                <th>Elev +/&minus;</th>
+                                <th>Moving time</th>
+                                <th>Avg speed</th>
+                                <th>Max speed</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="dayRows"></tbody>
+                    </table>
+                </div>
+                <button class="add-more" id="addMoreBottom">
+                    + Add another day
+                </button>
+
+                <div class="section-head">
+                    <h2>Shareable card</h2>
+                    <span class="hint">exports as PNG</span>
+                </div>
+                <div class="card-outer">
+                    <div id="tripCard">
+                        <div class="card-eyebrow">TRIPLINE · FIELD LOG</div>
+                        <div class="card-title" id="cardTitle">
+                            Untitled Trip
+                        </div>
+                        <div class="card-subtitle" id="cardSubtitle"></div>
+                        <div class="card-dates" id="cardDates"></div>
+                        <div id="cardGrid"></div>
+                        <div class="card-map-wrap">
+                            <canvas
+                                id="cardMapCanvas"
+                                width="1000"
+                                height="440"></canvas>
+                            <div class="card-map-loading" id="cardMapLoading">
+                                Loading map…
+                            </div>
+                            <div class="map-tick tick-tl"></div>
+                            <div class="map-tick tick-tr"></div>
+                            <div class="map-tick tick-bl"></div>
+                            <div class="map-tick tick-br"></div>
+                        </div>
+                        <svg
+                            id="cardElevSvg"
+                            viewBox="0 0 1000 140"
+                            preserveAspectRatio="none"></svg>
+                    </div>
+                    <div class="actions">
+                        <button class="btn primary" id="downloadBtn">
+                            Download card as PNG
+                        </button>
+                        <button class="btn" id="resetBtn">Start over</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-footer">
+                <div class="footer-links">
+                    <a
+                        href="https://www.strava.com/athletes/stiborlukas"
+                        id="footerStrava"
+                        target="_blank"
+                        rel="noopener"
+                        >Strava</a
+                    >
+                    <span class="footer-dot">·</span>
+                    <a
+                        href="https://github.com/stiborlukas/"
+                        id="footerGithub"
+                        target="_blank"
+                        rel="noopener"
+                        >GitHub</a
+                    >
+                    <span class="footer-dot">·</span>
+                    <a
+                        href="#"
+                        id="footerCoffee"
+                        class="footer-coffee"
+                        target="_blank"
+                        rel="noopener"
+                        >☕ Buy me a coffee</a
+                    >
+                </div>
+                <div class="footer-note">
+                    Tripline · built for the trail, not the cloud
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Reading GPX files…</div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="script.js"></script>
+    </body>
 </html>
