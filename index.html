@@ -14,6 +14,11 @@
             rel="stylesheet" />
 
         <link rel="stylesheet" href="style.css" />
+
+        <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="3adede13-717a-4c09-a6a5-1bbe9a6256d0"></script>
     </head>
     <body>
         <div class="wrap">
@@ -80,27 +85,71 @@
                 </div>
 
                 <div class="ledger" id="ledger"></div>
-                <div class="footnote">
-                    Gain/loss is computed from your file's own GPS/barometer
-                    elevation, lightly filtered for sensor noise. Strava,
-                    Garmin, and Komoot each run their own proprietary
-                    elevation-correction model against their own terrain data,
-                    so their numbers will still differ from this — and from each
-                    other — even on the exact same ride. That's normal, not a
-                    bug.
+                <div class="footnote-help">
+                    <button
+                        class="help-button"
+                        type="button"
+                        aria-label="Show elevation calculation explanation">
+                        ?
+                    </button>
+
+                    <div class="help-popover">
+                        Gain/loss is computed from your file's own GPS/barometer
+                        elevation, lightly filtered for sensor noise. Strava,
+                        Garmin, and Komoot each run their own proprietary
+                        elevation-correction model against their own terrain
+                        data, so their numbers will still differ from this — and
+                        from each other — even on the exact same ride. That's
+                        normal, not a bug.
+                    </div>
                 </div>
 
                 <div class="section-head">
-                    <h2>Route</h2>
-                    <span class="hint">colored by day</span>
+                    <div class="section-title-with-help">
+                        <h2>Route</h2>
+
+                        <button class="help-button" type="button">?</button>
+
+                        <div class="help-tooltip">
+                            The route is shown on the map and can be colored by
+                            day.
+                        </div>
+                    </div>
+
+                    <label class="toggle-control">
+                        <span>colored by day</span>
+                        <input type="checkbox" id="routeColorToggle" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
+
                 <div id="map"></div>
-
                 <div class="section-head">
-                    <h2>Elevation</h2>
-                    <span class="hint"
-                        >merged profile, cumulative distance</span
-                    >
+                    <div class="section-title-with-help">
+                        <h2>Elevation</h2>
+
+                        <button
+                            class="help-button"
+                            type="button"
+                            aria-label="About elevation chart">
+                            ?
+                        </button>
+
+                        <div class="help-tooltip">
+                            Merged elevation profile showing the full trip
+                            across cumulative distance. Each segment represents
+                            one day of the trip.
+                        </div>
+                    </div>
+
+                    <label class="toggle-control">
+                        <span>colored by day</span>
+                        <input
+                            type="checkbox"
+                            id="elevationColorToggle"
+                            checked />
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
                 <div class="elev-wrap">
                     <svg
@@ -216,5 +265,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script src="script.js"></script>
+
+        <script src="./demo/demo.js"></script>
+        <script src="./cookies.js"></script>
     </body>
 </html>
