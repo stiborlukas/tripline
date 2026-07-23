@@ -366,6 +366,8 @@ h1 {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 12px;
     margin: 30px 0 10px;
 }
 .section-head h2 {
@@ -533,6 +535,36 @@ table.days tr:last-child td {
     margin-top: 10px;
     margin-bottom: 40px;
 }
+.card-format-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--paper-dim);
+    flex-shrink: 0;
+}
+.card-format-control label {
+    white-space: nowrap;
+}
+.card-format-control select {
+    appearance: none;
+    background: var(--panel);
+    border: 1px solid var(--hair);
+    border-radius: 2px;
+    color: var(--paper);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    padding: 8px 28px 8px 10px;
+    cursor: pointer;
+    max-width: 100%;
+}
+.card-format-control select:hover,
+.card-format-control select:focus {
+    border-color: var(--c1);
+    outline: none;
+}
+
 #tripCard {
     border: 1px solid var(--hair);
     border-radius: 4px;
@@ -540,7 +572,71 @@ table.days tr:last-child td {
     padding: clamp(16px, 4vw, 28px);
     position: relative;
     overflow: hidden;
+    /* container-type lets the stat grid react to the CARD's own width
+       (set below via max-width per format) rather than the viewport's —
+       a narrow Instagram Story card on a wide desktop screen still needs
+       to drop to 2 columns even though the browser window itself is wide. */
+    container-type: inline-size;
 }
+/* Fixed-ratio formats: pin the card to that shape and let flexbox give the
+   map whatever vertical room is actually left after the title/stats/
+   elevation chart, instead of a hardcoded aspect-ratio that would leave the
+   map squished or oversized depending on the format. This is the "actually
+   change the layout, not just the aspect-ratio" version. */
+#tripCard.format-story,
+#tripCard.format-portrait,
+#tripCard.format-square,
+#tripCard.format-landscape,
+#tripCard.format-a4,
+#tripCard.format-a5 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+}
+#tripCard.format-story {
+    max-width: 420px;
+    aspect-ratio: 9 / 16;
+}
+#tripCard.format-portrait {
+    max-width: 480px;
+    aspect-ratio: 4 / 5;
+}
+#tripCard.format-square {
+    max-width: 560px;
+    aspect-ratio: 1 / 1;
+}
+#tripCard.format-landscape {
+    max-width: 820px;
+    aspect-ratio: 1.91 / 1;
+}
+#tripCard.format-a4 {
+    max-width: 560px;
+    aspect-ratio: 210 / 297;
+}
+#tripCard.format-a5 {
+    max-width: 480px;
+    aspect-ratio: 148 / 210;
+}
+#tripCard.format-story .card-map-wrap,
+#tripCard.format-portrait .card-map-wrap,
+#tripCard.format-square .card-map-wrap,
+#tripCard.format-landscape .card-map-wrap,
+#tripCard.format-a4 .card-map-wrap,
+#tripCard.format-a5 .card-map-wrap {
+    flex: 1 1 auto;
+    min-height: 60px;
+    aspect-ratio: unset; /* let flex sizing decide, not the classic 1000/440 ratio */
+}
+#tripCard.format-story #cardElevSvg,
+#tripCard.format-portrait #cardElevSvg,
+#tripCard.format-square #cardElevSvg,
+#tripCard.format-landscape #cardElevSvg,
+#tripCard.format-a4 #cardElevSvg,
+#tripCard.format-a5 #cardElevSvg {
+    flex: 0 0 auto;
+}
+
 #tripCard .card-eyebrow {
     font-family: "IBM Plex Mono", monospace;
     font-size: 10px;
@@ -655,6 +751,21 @@ table.days tr:last-child td {
     width: 100%;
     height: 90px;
     display: block;
+}
+
+@container (max-width: 460px) {
+    #cardGrid .stat-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    #cardGrid .cell:nth-child(2n) {
+        border-right: none;
+    }
+    #cardGrid .value {
+        font-size: 12.5px;
+    }
+    #cardGrid .label {
+        font-size: 8px;
+    }
 }
 
 @media (max-width: 640px) {
