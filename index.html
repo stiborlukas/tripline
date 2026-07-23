@@ -186,10 +186,31 @@
 
                 <div class="section-head">
                     <h2>Shareable card</h2>
-                    <span class="hint">exports as PNG</span>
+                    <div class="card-format-control">
+                        <label for="cardFormat">Format</label>
+                        <select id="cardFormat">
+                            <option value="auto" selected>
+                                Classic (auto height)
+                            </option>
+                            <option value="story">
+                                Instagram Story · 9:16
+                            </option>
+                            <option value="portrait">
+                                Instagram Post · 4:5
+                            </option>
+                            <option value="square">
+                                Instagram Square · 1:1
+                            </option>
+                            <option value="landscape">
+                                Social Landscape · 1.91:1
+                            </option>
+                            <option value="a4">Print · A4</option>
+                            <option value="a5">Print · A5</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="card-outer">
-                    <div id="tripCard">
+                    <div id="tripCard" class="format-auto">
                         <div class="card-eyebrow">TRIPLINE · FIELD LOG</div>
                         <div class="card-title" id="cardTitle">
                             Untitled Trip
@@ -241,7 +262,7 @@
                         rel="noopener"
                         >GitHub</a
                     >
-                    <span class="footer-dot">·</span>
+                    <!-- <span class="footer-dot">·</span>
                     <a
                         href="#"
                         id="footerCoffee"
@@ -249,7 +270,7 @@
                         target="_blank"
                         rel="noopener"
                         >☕ Buy me a coffee</a
-                    >
+                    > -->
                 </div>
                 <div class="footer-note">
                     Tripline · built for the trail, not the cloud
