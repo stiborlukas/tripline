@@ -110,6 +110,38 @@
         });
     }
 
+    // Shareable card export formats. "auto" is the original behavior (card
+    // grows to fit its content, no fixed aspect ratio) and stays the default
+    // so existing exports don't change unless the person picks something else.
+    const CARD_FORMATS = {
+        auto: { label: "Classic (auto height)" },
+        story: { label: "Instagram Story · 9:16", maxWidth: 420 },
+        portrait: { label: "Instagram Post · 4:5", maxWidth: 480 },
+        square: { label: "Instagram Square · 1:1", maxWidth: 560 },
+        landscape: { label: "Social Landscape · 1.91:1", maxWidth: 820 },
+        a4: { label: "Print · A4", maxWidth: 560 },
+        a5: { label: "Print · A5", maxWidth: 480 },
+    };
+
+    const cardFormatSelect = document.getElementById("cardFormat");
+    if (cardFormatSelect) {
+        cardFormatSelect.addEventListener("change", (e) => {
+            applyCardFormat(e.target.value);
+            // the map area's box just changed shape, so its canvas needs
+            // to be redrawn at the new dimensions, not just re-styled
+            drawCardMap();
+        });
+    }
+
+    function applyCardFormat(formatKey) {
+        const card = document.getElementById("tripCard");
+        if (!card) return;
+        Object.keys(CARD_FORMATS).forEach((key) =>
+            card.classList.remove("format-" + key),
+        );
+        card.classList.add("format-" + formatKey);
+    }
+
     // Warn on refresh/close/navigate-away if there's imported data that would
     // be lost — GPX files would have to be re-uploaded, there's no persistence.
     window.addEventListener("beforeunload", (e) => {
@@ -1166,8 +1198,19 @@
         const myToken = ++cardMapDrawToken;
         if (loadingEl) loadingEl.classList.remove("hidden");
 
+        // The map area's own shape now depends on the chosen card format (a
+        // 9:16 story leaves it tall, a landscape card leaves it short and
+        // wide) — read the actual rendered box rather than assuming a fixed
+        // 1000x440, and fall back to that only if the container isn't
+        // laid out yet for some reason.
+        const wrapEl = canvas.parentElement;
+        const rect = wrapEl ? wrapEl.getBoundingClientRect() : null;
+        const aspect =
+            rect && rect.width > 0 && rect.height > 0 ?
+                rect.height / rect.width
+            :   0.44;
         const logicalW = 1000,
-            logicalH = 440,
+            logicalH = Math.round(logicalW * aspect),
             dpr = 2;
         const ctx = canvas.getContext("2d");
         canvas.width = logicalW * dpr;
