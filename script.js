@@ -14,6 +14,9 @@
     const loadingText = document.getElementById("loadingText");
     const errorBanner = document.getElementById("errorBanner");
 
+    let colorRouteByDay = true;
+    let colorElevationByDay = true;
+
     // ---- safe min/max: never spread large arrays into Math.min/max, it blows
     // the call stack once a track has more than ~100k points (very easy to hit
     // on a multi-day, 1s-interval recording). Plain loops have no such limit.
@@ -84,7 +87,28 @@
     document
         .getElementById("downloadBtn")
         .addEventListener("click", downloadCard);
-    //   document.getElementById('demoBtn').addEventListener('click', loadDemo);
+
+    const routeColorToggle = document.getElementById("routeColorToggle");
+
+    if (routeColorToggle) {
+        routeColorToggle.addEventListener("change", (e) => {
+            colorRouteByDay = e.target.checked;
+            renderMap();
+            renderCard();
+        });
+    }
+
+    const elevationColorToggle = document.getElementById(
+        "elevationColorToggle",
+    );
+
+    if (elevationColorToggle) {
+        elevationColorToggle.addEventListener("change", (e) => {
+            colorElevationByDay = e.target.checked;
+            renderElevation();
+            renderCard();
+        });
+    }
 
     // Warn on refresh/close/navigate-away if there's imported data that would
     // be lost — GPX files would have to be re-uploaded, there's no persistence.
@@ -532,14 +556,17 @@
         // Longest contiguous stop anywhere in the trip (a stop can't be
         // detected *between* days — the recording is off overnight — so
         // this is the longest pause *within* any single day's file)
-        const stopDays = days.map((d) => d.longestStopMs).filter((v) => v != null);
+        const stopDays = days
+            .map((d) => d.longestStopMs)
+            .filter((v) => v != null);
         const longestStopMs = stopDays.length ? arrMax(stopDays) : null;
 
         // Net elevation change: trip's first recorded point vs its last —
         // different story than gain/loss, which only tracks cumulative
         // up/down and says nothing about where you started vs ended up.
         const startEleM = days.length ? days[0].startEleM : null;
-        const finishEleM = days.length ? days[days.length - 1].finishEleM : null;
+        const finishEleM =
+            days.length ? days[days.length - 1].finishEleM : null;
         const netChangeM =
             startEleM != null && finishEleM != null ?
                 finishEleM - startEleM
@@ -675,7 +702,10 @@
                     },
                     {
                         label: "Longest day",
-                        value: t.longestDayKm != null ? fmtKm(t.longestDayKm) : "—",
+                        value:
+                            t.longestDayKm != null ?
+                                fmtKm(t.longestDayKm)
+                            :   "—",
                         unit:
                             t.longestDayIdx != null ?
                                 "km · Day " + (t.longestDayIdx + 1)
@@ -728,7 +758,10 @@
                     },
                     {
                         label: "Longest climb",
-                        value: t.longestClimbKm != null ? fmtKm(t.longestClimbKm) : "—",
+                        value:
+                            t.longestClimbKm != null ?
+                                fmtKm(t.longestClimbKm)
+                            :   "—",
                         unit:
                             t.longestClimbDayIdx != null ?
                                 "km · Day " + (t.longestClimbDayIdx + 1)
@@ -876,8 +909,10 @@
         const allBounds = [];
         days.forEach((day, i) => {
             const latlngs = day.points.map((p) => [p.lat, p.lon]);
+            const routeColor = colorRouteByDay ? day.color : "#E9E3D0";
+
             const line = L.polyline(latlngs, {
-                color: day.color,
+                color: routeColor,
                 weight: 3.5,
                 opacity: 0.95,
             }).addTo(leafletMap);
@@ -975,7 +1010,11 @@
             if (segPts[segPts.length - 1] !== series[range.end])
                 segPts.push(series[range.end]);
             if (segPts.length < 2) return;
-            const color = PALETTE[di % PALETTE.length];
+
+            // Color elevation by day or use one neutral color
+            const color =
+                colorElevationByDay ? PALETTE[di % PALETTE.length] : "#E9E3D0";
+
             let path = "M " + x(segPts[0].dist) + " " + y(segPts[0].ele);
             segPts.forEach((p) => {
                 path += " L " + x(p.dist) + " " + y(p.ele);
@@ -1232,7 +1271,7 @@
             ctx.stroke();
             ctx.globalAlpha = 1;
             drawPath();
-            ctx.strokeStyle = day.color;
+            ctx.strokeStyle = colorRouteByDay ? day.color : "#E9E3D0";
             ctx.lineWidth = 3.2;
             ctx.stroke();
         });
