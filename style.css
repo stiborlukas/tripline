@@ -238,11 +238,27 @@ h1 {
     border-radius: 2px;
     overflow: hidden;
     background: var(--panel);
-    margin: 22px 0;
+    margin: 0;
+}
+.ledger-group + .ledger-group {
+    border-top: 1px solid var(--hair);
+}
+.ledger-group-title {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c1);
+    background: var(--panel-2);
+    padding: 6px 14px;
+    border-bottom: 1px solid var(--hair);
 }
 .stat-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(
+        5,
+        1fr
+    ); /* JS sets an inline column count per row; this is just the pre-JS fallback */
 }
 .stat-row + .stat-row {
     border-top: 1px solid var(--hair);
@@ -643,7 +659,7 @@ table.days tr:last-child td {
 
 @media (max-width: 640px) {
     #cardGrid .stat-row {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
     }
     #cardGrid .cell:nth-child(2n) {
         border-right: none;
@@ -780,9 +796,203 @@ table.days tr:last-child td {
     color: #5a6058;
 }
 
+.toggle-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--paper-dim);
+}
+
+.toggle-control input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    background: var(--panel);
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+}
+
+.toggle-slider::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--paper-dim);
+    transition:
+        transform 0.15s,
+        background 0.15s;
+}
+
+.toggle-control input:checked + .toggle-slider {
+    background: var(--c1);
+    border-color: var(--c1);
+}
+
+.toggle-control input:checked + .toggle-slider::after {
+    transform: translateX(14px);
+    background: var(--ink);
+}
+
+.toggle-control:hover .toggle-slider {
+    border-color: var(--paper-dim);
+}
+
 @media (max-width: 640px) {
+    .toggle-control span:first-child {
+        display: none;
+    }
+}
+
+.section-title-with-help {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+}
+
+.help-button {
+    width: 17px;
+    height: 17px;
+    padding: 0;
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--paper-dim);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    line-height: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.help-button:hover,
+.help-button:focus {
+    border-color: var(--c1);
+    color: var(--c1);
+    outline: none;
+}
+
+.help-tooltip {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 280px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    border-radius: 2px;
+    color: var(--paper-dim);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.help-button:hover + .help-tooltip,
+.help-button:focus + .help-tooltip {
+    display: block;
+}
+
+.section-title-with-help {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+}
+
+.help-button {
+    width: 17px;
+    height: 17px;
+    padding: 0;
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--paper-dim);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    line-height: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.help-button:hover,
+.help-button:focus {
+    border-color: var(--c1);
+    color: var(--c1);
+    outline: none;
+}
+
+.help-tooltip {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 280px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--hair);
+    border-radius: 2px;
+    color: var(--paper-dim);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.help-button:hover + .help-tooltip,
+.help-button:focus + .help-tooltip {
+    display: block;
+}
+
+.stat-head {
+    margin: 28px 0 10px;
+
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    color: var(--c1);
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-head::before {
+    content: "";
+    width: 14px;
+    height: 1px;
+    background: var(--c1);
+    flex-shrink: 0;
+}
+@media (max-width: 640px) {
+    /* !important: rows now get their column count set inline per-row by JS
+       (so a 3-stat row and a 4-stat row both fill the width evenly) — this
+       has to win over that on narrow screens or a 6-stat group would try to
+       cram 4 columns into a phone-width card. */
     .stat-row {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
     }
     .stat-row .cell:nth-child(2n) {
         border-right: none;
